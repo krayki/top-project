@@ -1,0 +1,86 @@
+#include <iostream>
+#include <string>
+#include <stack>
+#include <sstream>
+using namespace std;
+int evaluateExpression(string expression) {
+    stack<char> operators;
+    stack<int> operands;
+    for (char& c : expression) {
+        if (isdigit(c)) {
+            operands.push(c - '0');
+        } else if (c == '(') {
+            operators.push(c);
+        } else if (c == '+' || c == '-' || c == '*' || c == '/') {
+            while (!operators.empty() && operators.top() != '(' && ((c == '*' || c == '/') || (operators.top() == '+' || operators.top() == '-'))) {
+                int b = operands.top();
+                operands.pop();
+                int a = operands.top();
+                operands.pop();
+                char op = operators.top();
+                operators.pop();
+                int result = 0;
+                if (op == '+') {
+                    result = a + b;
+                } else if (op == '-') {
+                    result = a - b;
+                } else if (op == '*') {
+                    result = a * b;
+                } else if (op == '/') {
+                    result = a / b;
+                }
+                operands.push(result);
+            }
+            operators.push(c);
+        } else if (c == ')') {
+            while (!operators.empty() && operators.top() != '(') {
+                int b = operands.top();
+                operands.pop();
+                int a = operands.top();
+                operands.pop();
+                char op = operators.top();
+                operators.pop();
+                int result = 0;
+                if (op == '+') {
+                    result = a + b;
+                } else if (op == '-') {
+                    result = a - b;
+                } else if (op == '*') {
+                    result = a * b;
+                } else if (op == '/') {
+                    result = a / b;
+                }
+                operands.push(result);
+            }
+            operators.pop(); // Remove the '('
+        }
+    }
+    while (!operators.empty()) {
+        int b = operands.top();
+        operands.pop();
+        int a = operands.top();
+        operands.pop();
+        char op = operators.top();
+        operators.pop();
+        int result = 0;
+        if (op == '+') {
+            result = a + b;
+        } else if (op == '-') {
+            result = a - b;
+        } else if (op == '*') {
+            result = a * b;
+        } else if (op == '/') {
+            result = a / b;
+        }
+        operands.push(result);
+    }
+    return operands.top();
+}
+int main() {
+    cout << "Введите выражение:" << endl;
+    string input;
+    getline(cin, input);
+    int result = evaluateExpression(input);
+    cout << "Результат: " << result << endl;
+    return 0;
+}
