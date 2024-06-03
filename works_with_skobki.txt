@@ -1,0 +1,65 @@
+#include <iostream>
+#include <string>
+#include <sstream>
+#include <cctype>
+#include <algorithm> 
+
+using namespace std;
+
+int evaluate_expression(string& expression) {
+  int result = 0;
+  char op = '+'; // Default operator is '+'
+
+  // Find the innermost parentheses
+  size_t openParen = expression.find('(');
+  size_t closeParen = expression.find(')');
+  if (openParen != string::npos && closeParen != string::npos && openParen < closeParen) {
+    // Recursive call to evaluate the sub-expression within parentheses
+    string subExpression = expression.substr(openParen + 1, closeParen - openParen - 1);
+    int subResult = evaluate_expression(subExpression);
+    // Replace the parenthesized expression with the result
+    expression.replace(openParen, closeParen - openParen + 1, to_string(subResult));
+    // Evaluate the rest of the expression
+    result = evaluate_expression(expression);
+    return result;
+  }
+
+  istringstream iss(expression);
+  int current_num;
+  while (iss >> current_num) {
+    if (op == '+') {
+      result += current_num;
+    } else if (op == '-') {
+      result -= current_num;
+    } else if (op == '*') {
+      result *= current_num;
+      // Only skip reading the next operator if it's '*' or '/'
+      char nextOp;
+      if (iss >> nextOp && (nextOp == '*' || nextOp == '/' || nextOp == '+' || nextOp == '-')) {
+        op = nextOp;
+      } else {
+        iss.putback(nextOp); // Put the operator back if it's not '*' or '/'
+      }
+    } else if (op == '/') {
+      result /= current_num;
+      // Only skip reading the next operator if it's '*' or '/'
+      char nextOp;
+      if (iss >> nextOp && (nextOp == '*' || nextOp == '/' || nextOp == '+' || nextOp == '-')) {
+        op = nextOp;
+      } else {
+        iss.putback(nextOp); // Put the operator back if it's not '*' or '/'
+      }
+    }
+    iss >> op; // Read the next operator
+  }
+  return result;
+}
+
+int main() {
+  cout << "Введите выражение: ";
+  string expression;
+  getline(cin, expression);
+  int result = evaluate_expression(expression);
+  cout << "Результат: " << result << endl;
+  return 0;
+}
