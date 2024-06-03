@@ -8,56 +8,26 @@ int evaluateExpression(string expression) {
     stack<int> operands;
     stringstream ss(expression);
     string current;
-    while (ss >> current) {  // Use '>>' to read the entire number
-        if (isdigit(current[0])) {
-            operands.push(stoi(current));
-        } else if (current == "(") {
-            operators.push(current[0]);
-        } else if (current == "+" || current == "-" || current == "*" || current == "/") {
-            while (!operators.empty() && operators.top() != '(' && ((current[0] == '*' || current[0] == '/') || (operators.top() == '+' || operators.top() == '-'))) {
-                int b = operands.top();
-                operands.pop();
-                int a = operands.top();
-                operands.pop();
-                char op = operators.top();
-                operators.pop();
-                int result = 0;
-                if (op == '+') {
-                    result = a + b;
-                } else if (op == '-') {
-                    result = a - b;
-                } else if (op == '*') {
-                    result = a * b;
-                } else if (op == '/') {
-                    result = a / b;
-                }
-                operands.push(result);
+    while (ss.good()) { // Continue reading until the end of the stream
+        char c = ss.get();
+        if (isdigit(c)) {
+            current += c; // Build the number string
+        } else if (c == '+' || c == '-' || c == '*' || c == '/' || c == '(' || c == ')') {
+            if (!current.empty()) { // Push the built number if it's not empty
+                operands.push(stoi(current));
+                current.clear(); // Clear the number string
             }
-            operators.push(current[0]);
-        } else if (current == ")") {
-            while (!operators.empty() && operators.top() != '(') {
-                int b = operands.top();
-                operands.pop();
-                int a = operands.top();
-                operands.pop();
-                char op = operators.top();
-                operators.pop();
-                int result = 0;
-                if (op == '+') {
-                    result = a + b;
-                } else if (op == '-') {
-                    result = a - b;
-                } else if (op == '*') {
-                    result = a * b;
-                } else if (op == '/') {
-                    result = a / b;
-                }
-                operands.push(result);
-            }
-            operators.pop(); // Remove the '('
+            operators.push(c);
         }
     }
+    if (!current.empty()) { // Push the last number
+        operands.push(stoi(current));
+    }
     while (!operators.empty()) {
+        if (operators.top() == '(') {
+            operators.pop();
+            continue;
+        }
         int b = operands.top();
         operands.pop();
         int a = operands.top();
