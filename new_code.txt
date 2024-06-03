@@ -35,12 +35,12 @@ int evaluateExpression(string expression) {
         char op = operators.top();
         operators.pop();
         int result = 0;
-        if (op == '+') {
-            result = a + b;
+        if (op == '*') {
+            result = a * b;
         } else if (op == '-') {
             result = a - b;
-        } else if (op == '*') {
-            result = a * b;
+        } else if (op == '+') {
+            result = a + b;
         } else if (op == '/') {
             result = a / b;
         }
