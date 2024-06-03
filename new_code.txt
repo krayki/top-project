@@ -6,13 +6,15 @@ using namespace std;
 int evaluateExpression(string expression) {
     stack<char> operators;
     stack<int> operands;
-    for (char& c : expression) {
-        if (isdigit(c)) {
-            operands.push(c - '0');
-        } else if (c == '(') {
-            operators.push(c);
-        } else if (c == '+' || c == '-' || c == '*' || c == '/') {
-            while (!operators.empty() && operators.top() != '(' && ((c == '*' || c == '/') || (operators.top() == '+' || operators.top() == '-'))) {
+    stringstream ss(expression);
+    string current;
+    while (ss >> current) {  // Use '>>' to read the entire number
+        if (isdigit(current[0])) {
+            operands.push(stoi(current));
+        } else if (current == "(") {
+            operators.push(current[0]);
+        } else if (current == "+" || current == "-" || current == "*" || current == "/") {
+            while (!operators.empty() && operators.top() != '(' && ((current[0] == '*' || current[0] == '/') || (operators.top() == '+' || operators.top() == '-'))) {
                 int b = operands.top();
                 operands.pop();
                 int a = operands.top();
@@ -31,8 +33,8 @@ int evaluateExpression(string expression) {
                 }
                 operands.push(result);
             }
-            operators.push(c);
-        } else if (c == ')') {
+            operators.push(current[0]);
+        } else if (current == ")") {
             while (!operators.empty() && operators.top() != '(') {
                 int b = operands.top();
                 operands.pop();
