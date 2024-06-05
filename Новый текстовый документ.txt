@@ -1,19 +1,54 @@
 #include <iostream>
-#include <cmath>
 #include <string>
-#include <vector>
-#include <set>
-#include <algorithm>
-
+#include <stack>
+#include <sstream>
 using namespace std;
-
-//^,+,-,/,*
-
-int main()
-{
-    cout << "Введите выражение:"<<endl;
-    string p;
-    getline(cin, p);
+int evaluateExpression(string expression) {
+    stack<char> operators;
+    stack<int> operands;
+    stringstream ss(expression);
+    string current;
+    while (ss.good()) { // Continue reading until the end of the stream
+        char c = ss.get();
+        if (isdigit(c)) {
+            current += c; // Build the number string
+        } else if (c == '+' || c == '-' || c == '*' || c == '/' || c == '(' || c == ')') {
+            if (!current.empty()) { // Push the built number if it's not empty
+                operands.push(stoi(current));
+                current.clear(); // Clear the number string
+            }
+            operators.push(c);
+        }
+    }
+    if (!current.empty()) { // Push the last number
+        operands.push(stoi(current));
+    }
+    while (!operators.empty()) {
+        if (operators.top() == '(') {
+            operators.pop();
+            continue;
+        }
+        int b = operands.top();
+        operands.pop();
+        int a = operands.top();
+        operands.pop();
+        char op = operators.top();
+        operators.pop();
+        int result = 0;
+        if (op == '*') {
+            result = a * b;
+        } else if (op == '/') {
+            result = a / b;
+        } else if (op == '+') {
+            result = a + b;
+        } else if (op == '-') {
+            result = a - b;
+        }
+        operands.push(result);
+    }
+    return operands.top();
+}
+string stap(string p){
     string pr;
     for(int i=0; i<p.size();i++){
         if(p.at(i)==' '){
@@ -36,100 +71,17 @@ int main()
             break;
         }
     }
-    subs=pr.substr(n+1,h-n-1);
-    cout << subs<<endl;
-    while (subs.find('+')<=10000 || subs.find('-')<=10000 || subs.find('*')<=10000 || subs.find('/')<=10000 || subs.find('^')<=10000){
-        while (subs.find('*')<=10000){
-            int rpr;
-            string l, r;
-            int il, ir, sl, sr;
-            for(int j=subs.find('*')-1; j>=0;j--){
-                if (subs.at(j)=='^' || subs.at(j)=='/' || subs.at(j)=='*' || subs.at(j)=='+'){
-                    il=j+1;
-                    break;
-                }
-                else if (subs.at(j)=='-'){
-                    il=j;
-                    break;
-                }
-                il=j;
-            }
-            l=subs.substr(il,subs.find('*'));
-            if (subs.at(subs.find('*')+1)!='-'){
-                for(int j=subs.find('*')+1; j<subs.size();j++){
-                    if (subs.at(j)=='^' || subs.at(j)=='/' || subs.at(j)=='*' || subs.at(j)=='+' || subs.at(j)=='-'){
-                        ir=j-1;
-                        break;
-                    }
-                    ir=j;
-                }
-            }
-            else{
-                for(int j=subs.find('*')+2; j<subs.size();j++){
-                    if (subs.at(j)=='^' || subs.at(j)=='/' || subs.at(j)=='*' || subs.at(j)=='+' || subs.at(j)=='-'){
-                        ir=j-1;
-                        break;
-                    }
-                    ir=j;
-                }
-            }
-            r=subs.substr(subs.find('*')+1, ir);
-            // cout << l << endl << r;
-            rpr=stoi(l)*stoi(r);
-            subs.replace(il,ir+1-il, to_string(rpr));
-        }
-        // while (subs.find('-')<=10000){
-        //     int rpr;
-        //     string l, r;
-        //     int il, ir, sl, sr, ll, rr;
-        //     for(int j=subs.find('-')-1; j>=0;j--){
-        //         if (subs.at(j)=='^' || subs.at(j)=='-' || subs.at(j)=='/' || subs.at(j)=='*' || subs.at(j)=='+'){
-        //             il=j+1;
-        //             break;
-        //         }
-        //         il=j;
-        //     }
-        //     l=subs.substr(il,subs.find('-'));
-        //     for(int j=subs.find('-')+1; j<subs.size();j++){
-        //         if (subs.at(j)=='^' || subs.at(j)=='-' || subs.at(j)=='/' || subs.at(j)=='*' || subs.at(j)=='+'){
-        //             ir=j-1;
-        //             break;
-        //         }
-        //         ir=j;
-        //     }
-        //     r=subs.substr(subs.find('-')+1, ir);
-        //     // cout << l << endl << r<<endl << stoi(l) << endl<<stoi(r);
-        //     ll=stoi(l);
-        //     rr=stoi(r);
-        //     rpr=ll-rr;
-        //     // rpr=stoi(l)-stoi(r);
-        //     subs.replace(il,ir+1-il, to_string(rpr));
-        // }
-        while (subs.find('+')<=10000){
-            int rpr;
-            string l, r;
-            int il, ir, sl, sr;
-            for(int j=subs.find('+')-1; j>=0;j--){
-                if (subs.at(j)=='^' || subs.at(j)=='-' || subs.at(j)=='/' || subs.at(j)=='*' || subs.at(j)=='+'){
-                    il=j+1;
-                    break;
-                }
-                il=j;
-            }
-            l=subs.substr(il,subs.find('+'));
-            for(int j=subs.find('+')+1; j<subs.size();j++){
-                if (subs.at(j)=='^' || subs.at(j)=='-' || subs.at(j)=='/' || subs.at(j)=='*' || subs.at(j)=='+'){
-                    ir=j-1;
-                    break;
-                }
-                ir=j;
-            }
-            r=subs.substr(subs.find('+')+1, ir);
-            // cout << l << endl << r;
-            rpr=stoi(l)+stoi(r);
-            subs.replace(il,ir+1-il, to_string(rpr));
-        }
+    return pr.replace(n,h-n+1,to_string(evaluateExpression(pr.substr(n+1,h-n-1))));
+    
+}
+int main() {
+    cout << "Введите выражение:" << endl;
+    string input;
+    getline(cin, input);
+    while (input.find('(')!=18446744073709551615){
+        input=stap(input);
     }
-    cout << subs;
+    int result = evaluateExpression(input);
+    cout << "Результат: " << result << endl;
     return 0;
 }
